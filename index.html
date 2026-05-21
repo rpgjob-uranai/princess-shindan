@@ -692,4 +692,44 @@ function go() {
   }
   err.style.display = 'none';
 
-  // プリンセスタイプ（生�
+  // プリンセスタイプ（生まれ年末尾で決定）
+  const idx = parseInt(yr) % 10;
+  const p = PRINCESSES[idx];
+
+  // 結果セット
+  document.getElementById('resPrincessImg').src = p.img;
+  document.getElementById('resPrincessImg').alt = p.name;
+  document.getElementById('resName').textContent     = p.name;
+  document.getElementById('resTagline').textContent  = p.tagline;
+  document.getElementById('txt1').textContent = p.p1;
+  document.getElementById('txt2').textContent = p.p2;
+  document.getElementById('txt3').textContent = p.p3;
+  document.getElementById('txt4').textContent = p.p4;
+  document.getElementById('txt5').textContent = p.p5;
+  document.getElementById('txt6').textContent = p.p6;
+  document.getElementById('txt7').textContent = p.p7;
+
+  // テーマ切替
+  const rs = document.getElementById('resultSection');
+  rs.className = 'result-section ' + p.theme;
+
+  // X シェアURL
+  const shareText = encodeURIComponent('私のプリンセスタイプは「' + p.name + '」でした！\n' + p.tagline + '\n#プリンセス診断');
+  const shareUrl  = encodeURIComponent(location.href);
+  document.getElementById('shareXBtn').href =
+    'https://twitter.com/intent/tweet?text=' + shareText + '&url=' + shareUrl;
+
+  // 表示切替
+  document.getElementById('formCard').style.display    = 'none';
+  document.getElementById('resultSection').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function rst() {
+  document.getElementById('resultSection').style.display = 'none';
+  document.getElementById('formCard').style.display      = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
