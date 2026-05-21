@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プリンセス診断 | おとぎ話の世界で、あなたはどのお姫様？</title>
+  <meta name="description" content="生年月日から、あなたのプリンセスタイプがわかる。おとぎ話の世界で、あなたはどのお姫様？">
+  <meta property="og:title" content="プリンセス診断 | おとぎ話の世界で、あなたはどのお姫様？">
+  <meta property="og:description" content="生まれ年から、あなたのプリンセスタイプがわかる。全10パターン。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: linear-gradient(160deg, #fce4ec 0%, #f8bbd0 15%, #f3e5f5 45%, #ede7f6 75%, #e8eaf6 100%);
+      min-height: 100vh;
+      font-family: 'Noto Serif JP', serif;
+      color: #3d1a4a;
+    }
+
+    .container {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 48px 20px 100px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HEADER ── */
+    .header { text-align: center; margin-bottom: 52px; }
+
+    .header-logo {
+      display: block;
+      max-width: 320px;
+      width: 85%;
+      height: auto;
+      margin: 0 auto 16px;
+    }
+
+    .sub-title {
+      font-size: clamp(12px, 3.5vw, 15px);
+      color: #8e24aa;
+      letter-spacing: 2px;
+      opacity: 0.8;
+      line-height: 1.8;
+    }
+
+    .divider {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ce93d8, transparent);
+      margin: 20px auto 0;
+    }
+
+    /* ── FORM CARD ── */
+    .card {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 36px 28px;
+      box-shadow: 0 8px 40px rgba(156,39,176,0.12), 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid rgba(255,255,255,0.95);
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      text-align: center;
+      font-size: 14px;
+      color: #8e24aa;
+      letter-spacing: 4px;
+      margin-bottom: 28px;
+    }
+    .form-label span { font-size: 22px; display: block; margin-bottom: 6px; }
+
+    .selects-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .sel-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sel-label {
+      font-size: 10px;
+      color: #ab47bc;
+      text-align: center;
+      letter-spacing: 3px;
+      font-weight: 500;
+    }
+
+    select {
+      width: 100%;
+      padding: 11px 6px;
+      border: 2px solid #e1bee7;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.95);
+      color: #3d1a4a;
+      font-size: 15px;
+      font-family: inherit;
+      text-align: center;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.25s;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    select:focus { border-color: #ab47bc; }
+
+    .btn-diagnose {
+      width: 100%;
+      padding: 17px;
+      background: linear-gradient(135deg, #ad1457, #6a1b9a);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+      font-family: inherit;
+      font-weight: 700;
+      letter-spacing: 5px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(173,20,87,0.35);
+    }
+    .btn-diagnose:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(173,20,87,0.45); }
+    .btn-diagnose:active { transform: translateY(0); }
+
+    .error-msg {
+      color: #b71c1c;
+      text-align: center;
+      font-size: 13px;
+      margin-top: 14px;
+      display: none;
+      letter-spacing: 1px;
+    }
+
+    /* ── RESULT SECTION ── */
+    .result-section { display: none; animation: fadeUp 0.8s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── RESULT HERO ── */
+    .result-hero {
+      text-align: center;
+      padding: 44px 24px 36px;
+      border-radius: 28px;
+      margin-bottom: 20px;
+      border: none;
+    }
+
+    .result-pre {
+      font-size: 11px;
+      letter-spacing: 5px;
+      margin-bottom: 20px;
+      opacity: 0.6;
+    }
+
+    .result-princess-emoji {
+      font-size: 80px;
+      display: block;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,0.12));
+    }
+
+    .result-name {
+      font-size: clamp(32px, 10vw, 52px);
+      font-weight: 700;
+      letter-spacing: 6px;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .result-tagline {
+      font-size: 13px;
+      opacity: 0.65;
+      letter-spacing: 1px;
+      line-height: 1.9;
+    }
+
+    /* ── RESULT CARDS ── */
+    .result-card {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      border: 1px solid rgba(255,255,255,0.95);
+      border-left: 5px solid #ce93d8;
+    }
+
+    .card-head {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      margin-bottom: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #6a1b9a;
+    }
+    .card-head .ic { font-size: 17px; }
+
+    .card-body {
+      font-size: 14px;
+      line-height: 2;
+      color: #3d1a4a;
+    }
+
+    /* ── PER-PRINCESS COLOR THEMES ── */
+    /* cinderella – sky blue */
+    .p-cinderella .result-hero { background: linear-gradient(135deg, #e3f2fd, #f8bbd0, #e8eaf6); }
+    .p-cinderella .result-name { color: #1565c0; }
+    .p-cinderella .result-card { border-left-color: #64b5f6; }
+    .p-cinderella .card-head   { color: #1565c0; }
+
+    /* mermaid – teal */
+    .p-mermaid .result-hero { background: linear-gradient(135deg, #e0f7fa, #b2ebf2, #e8f5e9); }
+    .p-mermaid .result-name { color: #00695c; }
+    .p-mermaid .result-card { border-left-color: #4db6ac; }
+    .p-mermaid .card-head   { color: #00695c; }
+
+    /* snow – pale */
+    .p-snow .result-hero { background: linear-gradient(135deg, #fff9c4, #fce4ec, #fff8e1); }
+    .p-snow .result-name { color: #6d1b7b; }
+    .p-snow .result-card { border-left-color: #f48fb1; }
+    .p-snow .card-head   { color: #6d1b7b; }
+
+    /* sleeping – purple */
+    .p-sleeping .result-hero { background: linear-gradient(135deg, #ede7f6, #f3e5f5, #fce4ec); }
+    .p-sleeping .result-name { color: #4a148c; }
+    .p-sleeping .result-card { border-left-color: #ce93d8; }
+    .p-sleeping .card-head   { color: #4a148c; }
+
+    /* hood – red */
+    .p-hood .result-hero { background: linear-gradient(135deg, #ffebee, #fce4ec, #fff3e0); }
+    .p-hood .result-name { color: #b71c1c; }
+    .p-hood .result-card { border-left-color: #ef9a9a; }
+    .p-hood .card-head   { color: #b71c1c; }
+
+    /* belle – gold */
+    .p-belle .result-hero { background: linear-gradient(135deg, #fff8e1, #ffecb3, #fce4ec); }
+    .p-belle .result-name { color: #e65100; }
+    .p-belle .result-card { border-left-color: #ffcc80; }
+    .p-belle .card-head   { color: #e65100; }
+
+    /* rapunzel – lavender */
+    .p-rapunzel .result-hero { background: linear-gradient(135deg, #f3e5f5, #ede7f6, #fce4ec); }
+    .p-rapunzel .result-name { color: #6a1b9a; }
+    .p-rapunzel .result-card { border-left-color: #ba68c8; }
+    .p-rapunzel .card-head   { color: #6a1b9a; }
+
+    /* alice – sky */
+    .p-alice .result-hero { background: linear-gradient(135deg, #e1f5fe, #e3f2fd, #f3e5f5); }
+    .p-alice .result-name { color: #01579b; }
+    .p-alice .result-card { border-left-color: #81d4fa; }
+    .p-alice .card-head   { color: #01579b; }
+
+    /* gretel – warm */
+    .p-gretel .result-hero { background: linear-gradient(135deg, #efebe9, #fff8e1, #fce4ec); }
+    .p-gretel .result-name { color: #4e342e; }
+    .p-gretel .result-card { border-left-color: #bcaaa4; }
+    .p-gretel .card-head   { color: #4e342e; }
+
+    /* dorothy – emerald */
+    .p-dorothy .result-hero { background: linear-gradient(135deg, #e8f5e9, #f1f8e9, #e3f2fd); }
+    .p-dorothy .result-name { color: #1b5e20; }
+    .p-dorothy .result-card { border-left-color: #81c784; }
+    .p-dorothy .card-head   { color: #1b5e20; }
+
+    /* ── SHARE / FOOTER ── */
+    .share-row {
+      text-align: center;
+      margin: 32px 0 8px;
+    }
+
+    .btn-share-x {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #000;
+      color: #fff;
+      text-decoration: none;
+      padding: 13px 32px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin: 6px;
+    }
+    .btn-share-x:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+
+    .btn-retry {
+      display: inline-block;
+      margin: 8px 6px;
+      background: none;
+      border: 2px solid #ad1457;
+      color: #ad1457;
+      padding: 12px 36px;
+      border-radius: 50px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 700;
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-retry:hover { background: #ad1457; color: #fff; }
+
+    .note-section {
+      margin-top: 48px;
+      padding: 32px 24px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 24px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .note-badge {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: #8e24aa;
+      background: rgba(206,147,216,0.2);
+      padding: 4px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .note-catch {
+      font-size: clamp(14px, 4vw, 17px);
+      font-weight: 700;
+      color: #3d1a4a;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+    .note-desc {
+      font-size: 13px;
+      color: #777;
+      line-height: 1.9;
+      margin-bottom: 20px;
+    }
+    .btn-note {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #ad1457, #6a1b9a);
+      color: #fff;
+      text-decoration: none;
+      padding: 14px 36px;
+      border-radius: 50px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      box-shadow: 0 4px 24px rgba(173,20,87,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-note:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(173,20,87,0.4); }
+
+    /* ── BG DECO ── */
+    .bg-deco {
+      position: fixed; inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    .bg-deco span {
+      position: absolute;
+      font-size: 20px;
+      opacity: 0.18;
+      animation: floatDeco 8s ease-in-out infinite;
+    }
+    @keyframes floatDeco {
+      0%,100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-18px) rotate(20deg); }
+    }
+
+    @media (max-width: 400px) {
+      .container { padding: 36px 14px 80px; }
+      .card { padding: 28px 16px; }
+      .selects-row { gap: 6px; }
+      select { font-size: 14px; padding: 9px 4px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-deco" aria-hidden="true">
+  <span style="top:5%;left:8%;animation-delay:0s">✨</span>
+  <span style="top:15%;right:10%;animation-delay:1.5s">🌸</span>
+  <span style="top:30%;left:5%;animation-delay:3s">💫</span>
+  <span style="top:45%;right:6%;animation-delay:0.8s">⭐</span>
+  <span style="top:60%;left:12%;animation-delay:2.5s">🌺</span>
+  <span style="top:72%;right:8%;animation-delay:1s">✨</span>
+  <span style="top:85%;left:7%;animation-delay:3.5s">💎</span>
+  <span style="top:90%;right:12%;animation-delay:2s">🌙</span>
+</div>
+
+<div class="container">
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <img class="header-logo" src="../logo.png" alt="プリンセス診断">
+    <p class="sub-title">おとぎ話の世界で、<br>あなたはどのお姫様？</p>
+    <div class="divider"></div>
+  </header>
+
+  <!-- 入力フォーム -->
+  <div class="card" id="formCard">
+    <p class="form-label">
+      <span>🎂</span>
+      生年月日を入れてね
+    </p>
+    <div class="selects-row">
+      <div class="sel-wrap">
+        <span class="sel-label">YEAR 年</span>
+        <select id="yr"><option value="">年</option></select>
+      </div>
+      <div class="sel-wrap">
+        <span class="sel-label">MONTH 月</span>
+        <select id="mo">
+          <option value="">月</option>
+          <option value="1">1月</option><option value="2">2月</option>
+          <option value="3">3月</option><option value="4">4月</option>
+          <option value="5">5月</option><option value="6">6月</option>
+          <option value="7">7月</option><option value="8">8月</option>
+          <option value="9">9月</option><option value="10">10月</option>
+          <option value="11">11月</option><option value="12">12月</option>
+        </select>
+      </div>
+      <div class="sel-wrap">
+        <span class="sel-label">DAY 日</span>
+        <select id="dy"><option value="">日</option></select>
+      </div>
+    </div>
+    <button class="btn-diagnose" onclick="go()">👑 プリンセスを診断する 👑</button>
+    <p class="error-msg" id="errMsg">⚠️ 生年月日を全部入力してね！</p>
+  </div>
+
+  <!-- 結果セクション -->
+  <div class="result-section" id="resultSection">
+
+    <div class="result-hero card" id="resultHero">
+      <p class="result-pre">✨ YOUR PRINCESS IS... ✨</p>
+      <span class="result-princess-emoji" id="resEmoji"></span>
+      <h2 class="result-name" id="resName"></h2>
+      <p class="result-tagline" id="resTagline"></p>
+    </div>
+
+    <div class="result-card" id="card1">
+      <div class="card-head"><span class="ic">🌸</span>あなたの基本性格</div>
+      <p class="card-body" id="txt1"></p>
+    </div>
+    <div class="result-card" id="card2">
+      <div class="card-head"><span class="ic">💕</span>恋愛パターン</div>
+      <p class="card-body" id="txt2"></p>
+    </div>
+    <div class="result-card" id="card3">
+      <div class="card-head"><span class="ic">⭐</span>あなたが求めているもの</div>
+      <p class="card-body" id="txt3"></p>
+    </div>
+    <div class="result-card" id="card4">
+      <div class="card-head"><span class="ic">💎</span>あなたの魅力</div>
+      <p class="card-body" id="txt4"></p>
+    </div>
+    <div class="result-card" id="card5">
+      <div class="card-head"><span class="ic">🔮</span>今の恋の行方</div>
+      <p class="card-body" id="txt5"></p>
+    </div>
+    <div class="result-card" id="card6">
+      <div class="card-head"><span class="ic">💌</span>あなたへのメッセージ</div>
+      <p class="card-body" id="txt6"></p>
+    </div>
+    <div class="result-card" id="card7">
+      <div class="card-head"><span class="ic">👑</span>同じタイプの有名人</div>
+      <p class="card-body" id="txt7"></p>
+    </div>
+
+    <div class="share-row">
+      <a class="btn-share-x" id="shareXBtn" href="#" target="_blank" rel="noopener">𝕏 シェア</a>
+      <br>
+      <button class="btn-retry" onclick="rst()">🔄 もう一度診断する</button>
+    </div>
+
+    <div class="note-section">
+      <span class="note-badge">✨ SPECIAL</span>
+      <p class="note-catch">あなたの恋と運命を<br>もっと深く知りたい？</p>
+      <p class="note-desc">プリンセス診断をさらに深掘りした<br>あなたの心の成長を加速させるマガジン公開中！</p>
+      <a class="btn-note" href="https://twin-ray-guide.com/" target="_blank" rel="noopener">📖 読んでみる</a>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+//  プリンセスデータ（生まれ年末尾 0〜9）
+// ─────────────────────────────────────────────────────────────
+const PRINCESSES = [
+  {
+    // 年末尾 0
+    name: 'シンデレラ',
+    emoji: '👗',
+    theme: 'p-cinderella',
+    tagline: '逆境の中でも光り続ける、希望のプリンセス',
+    p1: '愛情深く、誰かのために一生懸命になれる人。自分より相手を優先してしまうことが多く、「いつかわかってくれる」と信じて待ち続ける芯の強さを持っています。',
+    p2: '好きになると、自分の気持ちをぐっと抑えて相手に合わせてしまいがち。「この人は私がいないとダメだ」と感じると、どんなに辛くても離れられなくなります。',
+    p3: '心から「あなただけだよ」と言ってもらえる安心感。認めてもらうことで、自分の存在価値を感じられるタイプです。',
+    p4: 'どんな状況でも希望を捨てない明るさと、相手を信じ続ける純粋さ。そのひたむきさに、思わず守りたくなる人が多いはず。',
+    p5: '待ちすぎると、自分が消耗していきます。相手からの行動を待つだけでなく、あなた自身の気持ちを少しずつ言葉にしてみて。',
+    p6: 'あなたが誰かを待ち続けているのは、弱さじゃない。それだけ深く愛せる人だということ。でも、その愛はまず自分自身に向けてあげてください。',
+    p7: '上白石萌歌さん（2000年生まれ）。どんな役も純粋に演じ切る誠実さと、相手への深い共感力がシンデレラそのもの。'
+  },
+  {
+    // 年末尾 1
+    name: '人魚姫',
+    emoji: '🧜‍♀️',
+    theme: 'p-mermaid',
+    tagline: '命がけで愛せる、深海のプリンセス',
+    p1: '感受性が豊かで、一度好きになると命がけで愛せる人。自分を犠牲にしてでも相手の幸せを願える、誰よりも深い愛情を持っています。',
+    p2: '「この人のためなら何でもできる」という気持ちが強く、自分の痛みや苦しさを後回しにしてしまいます。見返りを求めず尽くすうちに、自分が何者かわからなくなることも。',
+    p3: '「そのままでいい」と受け入れてもらえること。変わろうとしなくていい、あなたが好きだと言ってほしいのです。',
+    p4: '他の人には真似できない一途さと、相手の気持ちに寄り添える深い共感力。その存在感は、静かだけど忘れられない。',
+    p5: '自分を消してまで愛しても、長続きはしません。「私はどうしたい？」という問いを、たまには自分に向けてみて。',
+    p6: 'あなたの愛し方は本物です。でも、あなた自身の声も同じくらい大切にしていい。消えてしまわなくていい。',
+    p7: '内田理央さん（1991年生まれ）。一途で真剣な恋愛観と、相手に全力で向き合う姿勢が人魚姫と重なります。'
+  },
+  {
+    // 年末尾 2
+    name: '白雪姫',
+    emoji: '🍎',
+    theme: 'p-snow',
+    tagline: '純粋な心を持つ、清らかなプリンセス',
+    p1: '純粋で素直、人を疑うことが苦手なやさしい人。その無邪気さが魅力でもあり、気づかないうちに危険なものに近づいてしまうことも。',
+    p2: '「わかっていても止められない」という経験が多いタイプ。頭ではダメだとわかっていても、心が先に動いてしまいます。',
+    p3: '本当の意味で守ってもらえること。強がっているけど、誰かにそっとそばにいてほしいと思っています。',
+    p4: '飾らないありのままの姿と、まっすぐな愛情表現。一緒にいると心が休まると感じる人が多い。',
+    p5: '甘い言葉には少し慎重に。あなたを大切にしてくれる人かどうか、行動で判断する目を育てていきましょう。',
+    p6: 'あなたの純粋さは、この世界でとても貴重なもの。傷つくことを恐れずに、でもちゃんと自分を守ることも覚えて。',
+    p7: '深田恭子さん（1982年生まれ）。どこまでも明るく純粋なキャラクターと、人を惹きつける無邪気な魅力が白雪姫そのもの。'
+  },
+  {
+    // 年末尾 3
+    name: '眠り姫',
+    emoji: '🌙',
+    theme: 'p-sleeping',
+    tagline: '繊細な感性を持つ、夢の世界のプリンセス',
+    p1: '感情が豊かで夢見がち、現実のしんどさを感じると、心をそっと閉じてしまう繊細さを持っています。誰かと深くつながりたい反面、傷つくのが怖くていつも一歩引いてしまいます。',
+    p2: '彼との時間だけが「本当の現実」になりやすいタイプ。現実の生活から少し離れた夢の中に、この恋があります。',
+    p3: '日常から連れ出してくれる非日常感と、安心して眠れるような温かさ。',
+    p4: 'ミステリアスで近寄りがたい雰囲気と、打ち明けてくれたときのギャップ。守ってあげたいと思わせる存在感。',
+    p5: '現実から目を背け続けると、大事なことを見逃してしまいます。怖くても、今の自分の気持ちと向き合う時間を作って。',
+    p6: 'ずっと眠り続けなくていい。あなたが目を開けたとき、本当に大切なものが見えてくるはずだから。',
+    p7: '有村架純さん（1993年生まれ）。繊細で感情豊かな表現力と、どこか夢の中にいるような儚い雰囲気が眠り姫と重なります。'
+  },
+  {
+    // 年末尾 4
+    name: '赤ずきん',
+    emoji: '🧺',
+    theme: 'p-hood',
+    tagline: '好奇心と情熱で突き進む、冒険好きのプリンセス',
+    p1: '好奇心旺盛で行動力があり、「ダメ」と言われると余計に興味が湧いてしまうタイプ。刺激と冒険を求める気持ちが強く、退屈な日常に物足りなさを感じています。',
+    p2: '危険とわかっていても引き寄せられる恋が多い。「この人は私にだけ本音を見せてくれる」と感じると、一気に深みにはまります。',
+    p3: '日常では味わえないドキドキ感と、「特別な存在」として扱われる感覚。',
+    p4: 'どんな場所でも明るく場を盛り上げるエネルギーと、相手の懐に飛び込む度胸。その大胆さが魅力的。',
+    p5: '刺激を求めるほど、深みにはまりやすくなります。「この関係、自分を幸せにしている？」と、たまに立ち止まって。',
+    p6: 'あなたの情熱は本物。ただ、その炎を正しい方向に向けてあげて。本当に価値ある冒険は、もっと先にあるかもしれない。',
+    p7: '松本まりかさん（1984年生まれ）。ミステリアスで危うい魅力と、見る者を引き込む独特の存在感が赤ずきんそのもの。'
+  },
+  {
+    // 年末尾 5
+    name: 'ベル',
+    emoji: '🌹',
+    theme: 'p-belle',
+    tagline: '知性と芯の強さを持つ、本を愛するプリンセス',
+    p1: '知的で芯が強く、「人は変われる」と信じている人。他の人が見向きもしないものに価値を見出す、深い洞察力の持ち主です。',
+    p2: '「私だけがこの人の本当の姿を知っている」という感覚に強く引かれます。相手を変えようとするのではなく、変わっていく姿を見届けたいという使命感があります。',
+    p3: '表面ではなく、内側の自分を見てくれる人。「わかってもらえた」という深いつながり。',
+    p4: '相手の可能性を信じ続ける力と、どんな状況でも自分を失わない知性。その芯の強さに惹かれる人は多い。',
+    p5: '相手を信じることと、自分を犠牲にすることは違います。「私はどう扱われているか」を客観的に見てみて。',
+    p6: 'あなたの愛は深くて美しい。でも、あなたを愛してくれる人を選ぶ権利も、ちゃんとあなたにあります。',
+    p7: '綾瀬はるかさん（1985年生まれ）。どんな相手にも誠実に向き合う知性と、しなやかな芯の強さがベルと重なります。'
+  },
+  {
+    // 年末尾 6
+    name: 'ラプンツェル',
+    emoji: '🎨',
+    theme: 'p-rapunzel',
+    tagline: '感受性と創造性に溢れる、塔のプリンセス',
+    p1: '豊かな感受性と創造性を持ちながら、どこか閉じた世界に生きている人。自由を強く望みながらも、外に出ることへの不安を抱えています。',
+    p2: '「この人が私を外の世界に連れ出してくれる」と感じると、一気に依存してしまいます。彼だけが自分の世界とつながる窓になってしまうことも。',
+    p3: '自分をそのまま受け入れてくれる人と、安心して「外」に出られる感覚。',
+    p4: '独特の感性と、一度心を開いたときの深い愛情。その世界観に引き込まれる人は少なくない。',
+    p5: '一人の人に全てをかけると、その人を失ったとき行き場がなくなります。少しずつ、自分だけの出口を作っていきましょう。',
+    p6: 'あなたの髪は、誰かのためのはしごじゃない。あなた自身が自分の足で外に出る力を、もうすでに持っています。',
+    p7: '上野樹里さん（1986年生まれ）。独自の世界観と個性あふれる表現力、そして自分らしさを貫く姿がラプンツェルそのもの。'
+  },
+  {
+    // 年末尾 7
+    name: 'アリス',
+    emoji: '🐇',
+    theme: 'p-alice',
+    tagline: '不思議な世界を彷徨う、好奇心のプリンセス',
+    p1: '好奇心が強く感覚的で、気づいたら気がすすまない場所にいた…ということが多いタイプ。流れに乗りやすく、自分の意思より周囲の空気を優先してしまうことがあります。',
+    p2: '「なんとなく始まった恋」が深みにはまるパターンが多い。気づいたときには抜け出せない場所にいる、というのがあなたの恋です。',
+    p3: '何でも受け入れてくれる、不思議な安心感。「ここにいていいんだ」という居場所。',
+    p4: 'どんな空間にも自然と馴染む柔軟さと、予測できない発想の面白さ。一緒にいると飽きないと言われるタイプ。',
+    p5: '流されているうちに大事なものを見失いがちです。「この恋、私は本当に望んでいる？」という問いを大切に。',
+    p6: '迷子でもいい、でも自分がどこにいたいかだけは忘れないで。あなたには帰る場所を選ぶ力があります。',
+    p7: '倉科カナさん（1987年生まれ）。自然体で空気に馴染む柔軟さと、気づけば深みにはまる恋愛観がアリスと重なります。'
+  },
+  {
+    // 年末尾 8
+    name: 'グレーテル',
+    emoji: '🏡',
+    theme: 'p-gretel',
+    tagline: '献身的な愛で誰かを支える、森のプリンセス',
+    p1: '責任感が強く、誰かと一緒にいることで力を発揮するタイプ。一人でいると不安になりやすく、「頼れる誰か」を常に必要としています。',
+    p2: '相手に合わせすぎて、いつの間にか自分の気持ちがわからなくなることも。「この人がいないと」という気持ちが強く、依存に気づきにくい。',
+    p3: '一緒にいてくれる安心感と、「あなただけを見ている」という確かな言葉。',
+    p4: '一緒にいる人を全力でサポートする献身性と、状況に応じて行動できる柔軟さ。',
+    p5: '相手に合わせることと、自分を消すことは違います。あなた自身の「好き」や「嫌い」をちゃんと声に出して。',
+    p6: 'あなたは一人でも、ちゃんと森を歩いていける。誰かと歩くのはいいけど、道を決めるのはあなた自身でいい。',
+    p7: '新垣結衣さん（1988年生まれ）。誠実で真面目、そばにいる人を大切にする姿勢と献身的な愛情がグレーテルと重なります。'
+  },
+  {
+    // 年末尾 9
+    name: 'ドロシー',
+    emoji: '🌈',
+    theme: 'p-dorothy',
+    tagline: '居場所を探し続ける、旅するプリンセス',
+    p1: '行動力があり、環境が変わっても自分なりに適応できる強さを持っています。一方で「本当の居場所」を探し続けており、どこにいても「ここじゃない気がする」という感覚を抱えがち。',
+    p2: '「この人といれば変われる」「この恋が本当の自分を見つけるきっかけになる」と感じて恋に落ちます。でも辿り着いた先で、求めていたものが違うと気づくことも。',
+    p3: '「やっとここにいる」と感じられる居場所と、ありのままを受け入れてくれる誰か。',
+    p4: 'どんな状況でもへこたれない芯の強さと、出会う人を自然と惹きつける明るさ。',
+    p5: '外に答えを求め続けると、疲れてしまいます。「何を探しているのか」の答えは、実はもうあなたの中にあるかもしれない。',
+    p6: 'ずっと探していた「家」は、遠い場所じゃなくていい。自分を大切にできたとき、どこにいてもあなたの居場所になります。',
+    p7: '仲間由紀恵さん（1979年生まれ）。どんな場所でも自分らしさを貫く行動力と、人を惹きつける強さとやさしさがドロシーそのもの。'
+  }
+];
+
+// ─────────────────────────────────────────────────────────────
+//  年セレクト生成
+// ─────────────────────────────────────────────────────────────
+(function buildSelects() {
+  const yr = document.getElementById('yr');
+  const dy = document.getElementById('dy');
+  const curYear = new Date().getFullYear();
+  for (let y = curYear; y >= 1930; y--) {
+    const o = document.createElement('option');
+    o.value = y; o.textContent = y + '年';
+    yr.appendChild(o);
+  }
+  for (let d = 1; d <= 31; d++) {
+    const o = document.createElement('option');
+    o.value = d; o.textContent = d + '日';
+    dy.appendChild(o);
+  }
+})();
+
+// ─────────────────────────────────────────────────────────────
+//  診断実行
+// ─────────────────────────────────────────────────────────────
+function go() {
+  const yr  = document.getElementById('yr').value;
+  const mo  = document.getElementById('mo').value;
+  const dy  = document.getElementById('dy').value;
+  const err = document.getElementById('errMsg');
+
+  if (!yr || !mo || !dy) {
+    err.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
+
+  // プリンセスタイプ（生まれ年の末尾）
+  const pIdx     = parseInt(yr) % 10;
+  const princess = PRINCESSES[pIdx];
+
+  // テーマ設定
+  const hero = document.getElementById('resultHero');
+  hero.className = 'result-hero card ' + princess.theme;
+  document.querySelectorAll('.result-card').forEach(c => {
+    c.className = 'result-card ' + princess.theme;
+  });
+
+  // テキスト反映
+  document.getElementById('resEmoji').textContent   = princess.emoji;
+  document.getElementById('resName').textContent    = princess.name;
+  document.getElementById('resTagline').textContent = princess.tagline;
+  document.getElementById('txt1').textContent       = princess.p1;
+  document.getElementById('txt2').textContent       = princess.p2;
+  document.getElementById('txt3').textContent       = princess.p3;
+  document.getElementById('txt4').textContent       = princess.p4;
+  document.getElementById('txt5').textContent       = princess.p5;
+  document.getElementById('txt6').textContent       = princess.p6;
+  document.getElementById('txt7').textContent       = princess.p7;
+
+  // Xシェアリンク
+  const shareText =
+    `✨ プリンセス診断 ✨\n` +
+    `私は「${princess.name}」でした！\n` +
+    `${princess.tagline}\n\n` +
+    `#プリンセス診断 #占い`;
+  document.getElementById('shareXBtn').href =
+    'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText);
+
+  // 表示切替
+  document.getElementById('formCard').style.display = 'none';
+  const rs = document.getElementById('resultSection');
+  rs.style.display = 'block';
+  rs.style.animation = 'none';
+  void rs.offsetWidth;
+  rs.style.animation = 'fadeUp 0.8s ease';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  リセット
+// ─────────────────────────────────────────────────────────────
+function rst() {
+  document.getElementById('resultSection').style.display = 'none';
+  document.getElementById('formCard').style.display      = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
